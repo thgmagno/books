@@ -1,10 +1,31 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { RegisterServiceWorker } from "@/components/register-service-worker";
 
 export const metadata: Metadata = {
   title: "Book Notes — Suas anotações de leitura",
   description:
     "Anote livros, salve resumos, ideias e citações. Relembre o que leu e leia mais.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Book Notes",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fefdfb" },
+    { media: "(prefers-color-scheme: dark)", color: "#2d3142" },
+  ],
 };
 
 export default function RootLayout({
@@ -29,7 +50,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased" suppressHydrationWarning>{children}</body>
+      <body className="antialiased" suppressHydrationWarning>
+        {children}
+        <RegisterServiceWorker />
+      </body>
     </html>
   );
 }
