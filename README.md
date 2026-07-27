@@ -4,10 +4,10 @@ App pessoal para anotar livros, salvar resumos, ideias e citações. Ajuda a rel
 
 ## 🛠️ Tech Stack
 
-- **Next.js 16** — App Router + Server Actions (sem API separada)
+- **Next.js 16** — App Router + Server Actions
 - **React 19** + **TypeScript**
 - **shadcn/ui** + **Tailwind CSS v4**
-- **NextAuth v5 (Auth.js)** — login com Google
+- **NextAuth v5 (Auth.js)** — Google provider
 - **PostgreSQL** (driver `pg`, SQL puro)
 - **Deploy**: Railway
 
