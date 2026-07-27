@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { NewBookStatusSelect } from "@/components/new-book-status-select";
 
 export default async function NewBookPage() {
   const session = await auth();
@@ -75,16 +76,7 @@ export default async function NewBookPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  name="status"
-                  defaultValue="want_to_read"
-                  className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
-                >
-                  <option value="want_to_read">Quer ler</option>
-                  <option value="reading">Lendo</option>
-                  <option value="read">Lido</option>
-                </select>
+                <NewBookStatusSelect />
               </div>
 
               <Button type="submit" className="w-full">
