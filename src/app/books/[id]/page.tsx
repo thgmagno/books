@@ -83,7 +83,7 @@ export default async function BookDetailPage({
         {/* Cabeçalho do livro */}
         <Card className="mb-8">
           <CardContent className="flex flex-col gap-6 sm:flex-row">
-            <div className="flex h-44 w-28 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-muted-foreground text-4xl">
+            <div className="flex h-44 w-full sm:w-28 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-muted-foreground text-4xl">
               {book.cover_image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -97,11 +97,11 @@ export default async function BookDetailPage({
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center sm:items-start justify-between gap-2">
                 <h1 className="font-display text-2xl font-bold sm:text-3xl">
                   {book.title}
                 </h1>
-                <Button asChild variant="ghost" size="icon" className="shrink-0" title="Editar livro">
+                <Button asChild variant="secondary" size="icon" className="shrink-0" title="Editar livro">
                   <Link href={`/books/${book.id}/edit`}>
                     <Pencil className="size-4" />
                   </Link>
