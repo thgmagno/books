@@ -1,138 +1,113 @@
 # 📚 Book Notes App
 
-Um app pessoal para anotar livros, salvar resumos, ideias e citações. Ajuda a relembrar de livros já lidos e incentiva a leitura.
-
-## 🎯 Funcionalidades
-
-- **Biblioteca pessoal**: Organize livros por status (lendo, lido, quer ler)
-- **Anotações estruturadas**: Salve resumos, ideias, citações e notas gerais
-- **Visualização minimalista**: Design limpo inspirado em cadernos pessoais
-- **Busca e filtros**: Encontre livros rapidamente por título, autor ou status
-- **Estatísticas**: Acompanhe sua jornada de leitura
+App pessoal para anotar livros, salvar resumos, ideias e citações. Ajuda a relembrar livros já lidos e incentiva a leitura.
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js + Express
-- **Frontend**: React + Vite + Tailwind CSS
-- **Banco de dados**: PostgreSQL
+- **Next.js 16** — App Router + Server Actions (sem API separada)
+- **React 19** + **TypeScript**
+- **shadcn/ui** + **Tailwind CSS v4**
+- **NextAuth v5 (Auth.js)** — login com Google
+- **PostgreSQL** (driver `pg`, SQL puro)
 - **Deploy**: Railway
+
+## 🎯 Funcionalidades
+
+- Login com conta Google (cada usuário vê apenas seus livros)
+- Biblioteca por status: Quer ler / Lendo / Lido
+- Anotações por tipo: Resumo, Ideia, Citação, Nota — organizadas em abas
+- Busca por título/autor
+- Datas de início/término preenchidas automaticamente ao mudar o status
+- Design minimalista inspirado em cadernos pessoais
 
 ## 📋 Setup local
 
 ### Pré-requisitos
-- Node.js 18+
+- Node.js 20+
 - PostgreSQL 12+
-- Git
+- Credenciais OAuth do Google
 
-### Instalação
+### 1. Instalar e configurar
 
 ```bash
-# Clone o repositório
 git clone <seu-repo-url>
 cd book-notes-app
-
-# Instale as dependências
 npm install
-
-# Configure as variáveis de ambiente
 cp .env.example .env
+```
 
-# Configure seu banco de dados no .env
-# DATABASE_URL=postgresql://user:password@localhost:5432/book_notes_db
+### 2. Configurar Google OAuth
 
-# Crie as tabelas
+1. Acesse https://console.cloud.google.com → APIs & Services → Credentials
+2. Crie um **OAuth 2.0 Client ID** (tipo: Web application)
+3. Adicione a Redirect URI: `http://localhost:3000/api/auth/callback/google`
+4. Copie o Client ID e Client Secret para o `.env`
+
+### 3. Gerar o AUTH_SECRET
+
+```bash
+npx auth secret
+```
+
+### 4. Banco e execução
+
+```bash
+# Configure DATABASE_URL no .env, então:
 npm run db:migrate
 
-# (Opcional) Seed inicial com dados de exemplo
-npm run db:seed
-
-# Inicie o servidor de desenvolvimento
 npm run dev
+# http://localhost:3000
 ```
 
-O app estará disponível em `http://localhost:5173` (frontend) e a API em `http://localhost:3000`.
-
-## 📁 Estrutura do projeto
+## 📁 Estrutura
 
 ```
-book-notes-app/
-├── src/
-│   ├── server/
-│   │   ├── index.js
-│   │   ├── routes/
-│   │   │   ├── books.js
-│   │   │   └── notes.js
-│   │   ├── db/
-│   │   │   ├── migrations.js
-│   │   │   ├── seed.js
-│   │   │   └── pool.js
-│   │   └── middleware/
-│   │       └── auth.js (preparado para autenticação futura)
-│   ├── client/
-│   │   ├── main.jsx
-│   │   ├── App.jsx
-│   │   ├── components/
-│   │   │   ├── BookCard.jsx
-│   │   │   ├── BookDetail.jsx
-│   │   │   ├── NoteForm.jsx
-│   │   │   └── Sidebar.jsx
-│   │   ├── pages/
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── BookDetail.jsx
-│   │   │   └── AddBook.jsx
-│   │   ├── styles/
-│   │   │   ├── globals.css
-│   │   │   └── tailwind.config.js
-│   │   └── utils/
-│   │       └── api.js
-│   └── shared/
-│       └── constants.js
-├── .env.example
-├── .gitignore
-├── package.json
-└── README.md
+src/
+├── auth.ts                     # Config NextAuth v5 (Google)
+├── app/
+│   ├── layout.tsx              # Layout raiz (fontes, metadata)
+│   ├── page.tsx                # Dashboard (protegido)
+│   ├── login/page.tsx          # Login com Google
+│   ├── books/
+│   │   ├── new/page.tsx        # Adicionar livro
+│   │   └── [id]/page.tsx       # Detalhes + abas de notas
+│   ├── actions/
+│   │   ├── auth.ts             # Server Actions: login/logout
+│   │   ├── books.ts            # Server Actions: CRUD de livros
+│   │   └── notes.ts            # Server Actions: CRUD de notas
+│   └── api/auth/[...nextauth]/ # Route handler do NextAuth
+├── components/
+│   ├── ui/                     # Componentes shadcn/ui
+│   ├── header.tsx, book-card.tsx, note-form.tsx,
+│   ├── status-select.tsx, user-menu.tsx,
+│   └── delete-*-button.tsx
+└── lib/
+    ├── db.ts                   # Pool PostgreSQL
+    ├── types.ts                # Tipos e labels
+    └── utils.ts                # cn() do shadcn
 ```
 
 ## 🚀 Deploy no Railway
 
-1. Crie um novo projeto no Railway
-2. Conecte seu repositório GitHub
-3. Configure as variáveis de ambiente (DATABASE_URL, NODE_ENV, etc)
-4. Deploy automático
-
-## 📝 API Endpoints
-
-### Livros
-- `GET /api/books` — Lista todos os livros
-- `GET /api/books/:id` — Detalhes de um livro
-- `POST /api/books` — Criar novo livro
-- `PUT /api/books/:id` — Atualizar livro
-- `DELETE /api/books/:id` — Deletar livro
-
-### Notas
-- `GET /api/books/:bookId/notes` — Notas de um livro
-- `POST /api/books/:bookId/notes` — Adicionar nota
-- `PUT /api/notes/:id` — Atualizar nota
-- `DELETE /api/notes/:id` — Deletar nota
+1. Crie um projeto no Railway e conecte este repositório
+2. Adicione o plugin **PostgreSQL** (cria `DATABASE_URL` automaticamente)
+3. Configure as variáveis:
+   - `AUTH_SECRET` (gere com `npx auth secret`)
+   - `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`
+   - `AUTH_TRUST_HOST=true`
+4. No Google Cloud Console, adicione a Redirect URI de produção:
+   `https://SEU-APP.up.railway.app/api/auth/callback/google`
+5. Rode a migração uma vez (Railway CLI ou one-off command):
+   `npm run db:migrate`
 
 ## 🎨 Design
 
-Design minimalista inspirado em cadernos pessoais.
+Minimalista, inspirado em cadernos pessoais.
 
-**Paleta**:
-- Primária: `#2D3142` (azul-cinza profundo)
-- Secundária: `#D4A574` (ocre quente)
-- Fundo: `#FEFDFB` (creme suave)
-
-**Tipografia**:
-- Display: Merriweather (serif)
-- Body: Inter (sans-serif)
-- Mono: JetBrains Mono
+- **Paleta**: azul-cinza profundo, ocre quente, creme suave (via CSS variables/oklch)
+- **Tipografia**: Merriweather (display) + Inter (body) + JetBrains Mono
+- **Assinatura visual**: marcador de página animado no hover dos cards
 
 ## 📜 Licença
 
 Privado
-
-## ✍️ Autor
-
-Desenvolvido por você 📖
