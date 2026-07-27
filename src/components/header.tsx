@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/user-menu";
 
 export async function Header() {
@@ -22,6 +23,7 @@ export async function Header() {
               <span className="hidden sm:inline">Adicionar livro</span>
             </Link>
           </Button>
+          <ThemeToggle />
           <UserMenu
             name={session?.user?.name}
             email={session?.user?.email}
