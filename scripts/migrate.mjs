@@ -1,6 +1,7 @@
 import { Pool } from "pg";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+import { existsSync } from "fs";
+import { resolve } from "path";
+import { loadEnvFile } from "node:process";
 
 const sql = `
   CREATE TABLE IF NOT EXISTS books (
@@ -33,6 +34,8 @@ const sql = `
 `;
 
 try {
+  loadEnvFile();
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   console.log("Running migrations...");
   await pool.query(sql);
   console.log("✅ Migrations completed");
