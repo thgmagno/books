@@ -9,7 +9,7 @@ App pessoal para anotar livros, salvar resumos, ideias e citações. Ajuda a rel
 - **shadcn/ui** + **Tailwind CSS v4**
 - **NextAuth v5 (Auth.js)** — Google provider
 - **PostgreSQL** (driver `pg`, SQL puro)
-- **Deploy**: Railway
+- **Deploy**: Vercel
 
 ## 🎯 Funcionalidades
 
@@ -86,28 +86,3 @@ src/
     ├── types.ts                # Tipos e labels
     └── utils.ts                # cn() do shadcn
 ```
-
-## 🚀 Deploy no Railway
-
-1. Crie um projeto no Railway e conecte este repositório
-2. Adicione o plugin **PostgreSQL** (cria `DATABASE_URL` automaticamente)
-3. Configure as variáveis:
-   - `AUTH_SECRET` (gere com `npx auth secret`)
-   - `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`
-   - `AUTH_TRUST_HOST=true`
-4. No Google Cloud Console, adicione a Redirect URI de produção:
-   `https://SEU-APP.up.railway.app/api/auth/callback/google`
-5. Rode a migração uma vez (Railway CLI ou one-off command):
-   `npm run db:migrate`
-
-## 🎨 Design
-
-Minimalista, inspirado em cadernos pessoais.
-
-- **Paleta**: azul-cinza profundo, ocre quente, creme suave (via CSS variables/oklch)
-- **Tipografia**: Merriweather (display) + Inter (body) + JetBrains Mono
-- **Assinatura visual**: marcador de página animado no hover dos cards
-
-## 📜 Licença
-
-Privado
