@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { auth } from "@/auth";
 import { getBook, updateBook } from "@/app/actions/books";
+import { DeleteBookButton } from "@/components/delete-book-button";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,6 +90,19 @@ export default async function EditBookPage({
                 Salvar alterações
               </Button>
             </form>
+          </CardContent>
+        </Card>
+
+        <Card className="border-destructive/50 mt-8">
+          <CardHeader>
+            <CardTitle className="font-display text-lg">Zona de perigo</CardTitle>
+            <CardDescription>
+              Deletar este livro remove também todas as suas anotações. Esta ação não pode
+              ser desfeita.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DeleteBookButton bookId={book.id} />
           </CardContent>
         </Card>
       </main>
