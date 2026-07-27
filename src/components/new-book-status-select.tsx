@@ -4,11 +4,11 @@ import { useState } from "react";
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BOOK_STATUS_LABELS, type BookStatus } from "@/lib/types";
+import { BookStatusOptions } from "@/components/book-status-options";
+import type { BookStatus } from "@/lib/types";
 
 export function NewBookStatusSelect() {
   const [status, setStatus] = useState<BookStatus>("want_to_read");
@@ -20,11 +20,7 @@ export function NewBookStatusSelect() {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {(Object.keys(BOOK_STATUS_LABELS) as BookStatus[]).map((key) => (
-          <SelectItem key={key} value={key}>
-            {BOOK_STATUS_LABELS[key]}
-          </SelectItem>
-        ))}
+        <BookStatusOptions />
       </SelectContent>
     </Select>
   );
