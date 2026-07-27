@@ -5,11 +5,11 @@ import { updateBookStatus } from "@/app/actions/books";
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BOOK_STATUS_LABELS, type BookStatus } from "@/lib/types";
+import { BookStatusOptions } from "@/components/book-status-options";
+import type { BookStatus } from "@/lib/types";
 
 export function StatusSelect({
   bookId,
@@ -32,11 +32,7 @@ export function StatusSelect({
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {(Object.keys(BOOK_STATUS_LABELS) as BookStatus[]).map((key) => (
-          <SelectItem key={key} value={key}>
-            {BOOK_STATUS_LABELS[key]}
-          </SelectItem>
-        ))}
+        <BookStatusOptions />
       </SelectContent>
     </Select>
   );
