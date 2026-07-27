@@ -61,6 +61,28 @@ export async function createBook(formData: FormData) {
   redirect(`/books/${result.rows[0].id}`);
 }
 
+export async function updateBook(id: number, formData: FormData) {
+  const email = await requireUser();
+  const title = String(formData.get("title") ?? "").trim();
+  const author = String(formData.get("author") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+
+  if (!title) {
+    // O campo é required no form; se chegar vazio, volta ao formulário.
+    redirect(`/books/${id}/edit`);
+  }
+
+  await db.query(
+    `UPDATE books SET title = $3, author = $4, description = $5, updated_at = NOW()
+     WHERE id = $1 AND user_email = $2`,
+    [id, email, title, author || null, description || null]
+  );
+
+  revalidatePath("/");
+  revalidatePath(`/books/${id}`);
+  redirect(`/books/${id}`);
+}
+
 export async function updateBookStatus(id: number, status: BookStatus) {
   const email = await requireUser();
 

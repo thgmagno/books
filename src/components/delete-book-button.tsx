@@ -22,14 +22,9 @@ export function DeleteBookButton({ bookId }: { bookId: number }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={isPending}
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-          title="Deletar livro"
-        >
+        <Button variant="destructive" disabled={isPending}>
           <Trash2 className="size-4" />
+          Deletar livro
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { auth } from "@/auth";
 import { getBook } from "@/app/actions/books";
 import { getNotes } from "@/app/actions/notes";
-import { DeleteBookButton } from "@/components/delete-book-button";
 import { DeleteNoteButton } from "@/components/delete-note-button";
 import { Header } from "@/components/header";
 import { NoteForm } from "@/components/note-form";
@@ -102,7 +101,11 @@ export default async function BookDetailPage({
                 <h1 className="font-display text-2xl font-bold sm:text-3xl">
                   {book.title}
                 </h1>
-                <DeleteBookButton bookId={book.id} />
+                <Button asChild variant="ghost" size="icon" className="shrink-0" title="Editar livro">
+                  <Link href={`/books/${book.id}/edit`}>
+                    <Pencil className="size-4" />
+                  </Link>
+                </Button>
               </div>
 
               {book.author && (
