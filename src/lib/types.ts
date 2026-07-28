@@ -65,3 +65,5 @@ export interface FriendRequestItem {
   image: string | null;
   createdAt: string;
 }
+
+export type ActionResult = { success: true } | { error: string };

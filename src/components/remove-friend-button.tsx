@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { UserX } from "lucide-react";
+import { toast } from "sonner";
 import { removeFriendship } from "@/app/actions/friends";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ export function RemoveFriendButton({
           disabled={isPending}
           className="text-muted-foreground hover:text-destructive shrink-0"
           title="Desfazer amizade"
+          aria-label={`Desfazer amizade com ${friendName}`}
         >
           <UserX className="size-4" />
         </Button>
@@ -50,7 +52,16 @@ export function RemoveFriendButton({
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={() => startTransition(() => removeFriendship(friendshipId))}
+            onClick={() =>
+              startTransition(async () => {
+                const outcome = await removeFriendship(friendshipId);
+                if ("error" in outcome) {
+                  toast.error(outcome.error);
+                  return;
+                }
+                toast.success(`Amizade com ${friendName} desfeita`);
+              })
+            }
           >
             Desfazer amizade
           </AlertDialogAction>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { RegisterServiceWorker } from "@/components/register-service-worker";
+import { AppToaster } from "@/components/app-toaster";
 
 export const metadata: Metadata = {
   title: "Book Notes — Suas anotações de leitura",
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body className="antialiased" suppressHydrationWarning>
         {children}
         <RegisterServiceWorker />
+        <AppToaster />
       </body>
     </html>
   );

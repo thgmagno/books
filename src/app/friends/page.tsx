@@ -33,31 +33,35 @@ export default async function FriendsPage() {
           <FriendSearchForm />
         </section>
 
-        {received.length > 0 && (
-          <section className="mb-8">
-            <h2 className="mb-3 text-sm font-semibold tracking-wide uppercase">
-              Pedidos recebidos ({received.length})
-            </h2>
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold tracking-wide uppercase">
+            Pedidos recebidos ({received.length})
+          </h2>
+          {received.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nenhum pedido pendente.</p>
+          ) : (
             <div className="space-y-2">
               {received.map((request) => (
                 <FriendRequestRow key={request.id} request={request} variant="received" />
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
-        {sent.length > 0 && (
-          <section className="mb-8">
-            <h2 className="mb-3 text-sm font-semibold tracking-wide uppercase">
-              Pedidos enviados ({sent.length})
-            </h2>
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold tracking-wide uppercase">
+            Pedidos enviados ({sent.length})
+          </h2>
+          {sent.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nenhum pedido enviado.</p>
+          ) : (
             <div className="space-y-2">
               {sent.map((request) => (
                 <FriendRequestRow key={request.id} request={request} variant="sent" />
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
         <section>
           <h2 className="mb-3 text-sm font-semibold tracking-wide uppercase">
@@ -74,7 +78,7 @@ export default async function FriendsPage() {
               {friends.map((friend) => (
                 <div
                   key={friend.friendshipId}
-                  className="flex items-center justify-between gap-3 rounded-lg border p-3"
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3"
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <UserAvatar name={friend.name} email={friend.email} image={friend.image} />
