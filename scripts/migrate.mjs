@@ -3,7 +3,7 @@ import { existsSync } from "fs";
 import { resolve } from "path";
 import { loadEnvFile } from "node:process";
 
-// Em produção (Railway) as variáveis de ambiente já vêm injetadas no
+// Em produção (Vercel) as variáveis de ambiente já vêm injetadas no
 // processo, sem arquivo .env — só carrega o arquivo quando ele existe
 // (uso local/dev).
 const envPath = resolve(".env");
