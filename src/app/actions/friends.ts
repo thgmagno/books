@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db, withTransaction } from "@/lib/db";
 import { authorize, areFriends, UnauthorizedError } from "@/lib/authorize";
 import { getOrCreateCurrentUser } from "@/lib/current-user";
+import { createNotification } from "@/lib/notifications";
 import type { ActionResult, FriendListItem, FriendRequestItem, UserSearchResult } from "@/lib/types";
 
 function mapRequestRow(row: {
@@ -68,7 +69,7 @@ export async function searchUserByEmail(
 }
 
 export async function sendFriendRequest(targetUserId: number): Promise<ActionResult> {
-  const { id: actorId } = await getOrCreateCurrentUser();
+  const { id: actorId, email: actorEmail, name: actorName } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "SEND_FRIEND_REQUEST", { targetUserId });
   } catch (err) {
@@ -76,10 +77,19 @@ export async function sendFriendRequest(targetUserId: number): Promise<ActionRes
     throw err;
   }
 
-  await db.query("INSERT INTO friend_requests (requester_id, recipient_id) VALUES ($1, $2)", [
-    actorId,
-    targetUserId,
-  ]);
+  const requestResult = await db.query(
+    "INSERT INTO friend_requests (requester_id, recipient_id) VALUES ($1, $2) RETURNING id",
+    [actorId, targetUserId]
+  );
+
+  await createNotification({
+    userId: targetUserId,
+    type: "FRIEND_REQUEST_RECEIVED",
+    title: `${actorName ?? actorEmail} enviou uma solicitação de amizade`,
+    relatedUserId: actorId,
+    relatedFriendRequestId: requestResult.rows[0].id,
+  });
+
   revalidatePath("/friends");
   return { success: true };
 }
@@ -105,13 +115,15 @@ export async function respondFriendRequest(
   requestId: number,
   accept: boolean
 ): Promise<ActionResult> {
-  const { id: actorId } = await getOrCreateCurrentUser();
+  const { id: actorId, email: actorEmail, name: actorName } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "RESPOND_FRIEND_REQUEST", { friendRequestId: requestId });
   } catch (err) {
     if (err instanceof UnauthorizedError) return { error: "Não foi possível responder o pedido" };
     throw err;
   }
+
+  let requesterId: number | null = null;
 
   await withTransaction(async (client) => {
     const requestResult = await client.query(
@@ -122,6 +134,7 @@ export async function respondFriendRequest(
     if (!request) return;
 
     if (accept) {
+      requesterId = request.requester_id;
       await client.query(
         "UPDATE friend_requests SET status = 'accepted', responded_at = NOW(), updated_at = NOW() WHERE id = $1",
         [requestId]
@@ -139,6 +152,15 @@ export async function respondFriendRequest(
       );
     }
   });
+
+  if (accept && requesterId !== null) {
+    await createNotification({
+      userId: requesterId,
+      type: "FRIEND_REQUEST_ACCEPTED",
+      title: `${actorName ?? actorEmail} aceitou sua solicitação de amizade`,
+      relatedUserId: actorId,
+    });
+  }
 
   revalidatePath("/friends");
   return { success: true };

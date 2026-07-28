@@ -9,17 +9,22 @@ import { db } from "@/lib/db";
  * começaram antes dessa tabela existir. Usado por qualquer server action
  * que precise do id numérico do usuário (amigos, clones).
  */
-export async function getOrCreateCurrentUser(): Promise<{ id: number; email: string }> {
+export async function getOrCreateCurrentUser(): Promise<{
+  id: number;
+  email: string;
+  name: string | null;
+}> {
   const session = await auth();
   if (!session?.user?.email) {
     redirect("/login");
   }
   const email = session.user.email;
+  const name = session.user.name ?? null;
   const result = await db.query(
     `INSERT INTO users (email, name, image) VALUES ($1, $2, $3)
      ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, image = EXCLUDED.image
      RETURNING id`,
-    [email, session.user.name ?? null, session.user.image ?? null]
+    [email, name, session.user.image ?? null]
   );
-  return { id: result.rows[0].id, email };
+  return { id: result.rows[0].id, email, name };
 }

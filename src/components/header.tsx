@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus, Users } from "lucide-react";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/user-menu";
 
@@ -17,6 +18,7 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-3">
+          {session?.user && <NotificationBell />}
           <Button asChild variant="ghost" size="icon" title="Amigos" aria-label="Amigos">
             <Link href="/friends">
               <Users className="size-4" />

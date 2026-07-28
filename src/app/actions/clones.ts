@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db, withTransaction } from "@/lib/db";
-import { authorize, UnauthorizedError } from "@/lib/authorize";
+import { authorize, getBookOwnerId, UnauthorizedError } from "@/lib/authorize";
 import { getOrCreateCurrentUser } from "@/lib/current-user";
+import { createNotification } from "@/lib/notifications";
 import type { CloneOrigin, FriendBookItem } from "@/lib/types";
 
 export async function getFriendBooks(
@@ -51,7 +52,7 @@ export async function getFriendBooks(
 }
 
 export async function cloneBook(bookId: number): Promise<{ error: string } | undefined> {
-  const { id: actorId, email: actorEmail } = await getOrCreateCurrentUser();
+  const { id: actorId, email: actorEmail, name: actorName } = await getOrCreateCurrentUser();
 
   try {
     await authorize(actorId, "CLONE_BOOK", { bookId });
@@ -100,6 +101,17 @@ export async function cloneBook(bookId: number): Promise<{ error: string } | und
 
     await client.query("UPDATE books SET clone_count = clone_count + 1 WHERE id = $1", [bookId]);
   });
+
+  const ownerId = await getBookOwnerId(bookId);
+  if (ownerId !== null) {
+    await createNotification({
+      userId: ownerId,
+      type: "BOOK_CLONED",
+      title: `${actorName ?? actorEmail} clonou seu livro "${source.title}"`,
+      relatedUserId: actorId,
+      relatedBookId: bookId,
+    });
+  }
 
   revalidatePath("/");
   redirect(`/books/${newBookId}`);

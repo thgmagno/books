@@ -121,6 +121,25 @@ const sql = `
 
   CREATE INDEX IF NOT EXISTS idx_book_comments_book ON book_comments(book_id, deleted_at);
   CREATE INDEX IF NOT EXISTS idx_book_comments_user ON book_comments(user_id);
+
+  -- Notificações (Issue #13). "type" e "title" já vêm prontos do lado da
+  -- aplicação (ver src/lib/notifications.ts) — a UI nunca precisa
+  -- recalcular o texto a partir das FKs, então elas podem virar NULL sem
+  -- quebrar a notificação já registrada.
+  CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    related_user_id INT REFERENCES users(id) ON DELETE SET NULL,
+    related_book_id INT REFERENCES books(id) ON DELETE SET NULL,
+    related_friend_request_id INT REFERENCES friend_requests(id) ON DELETE SET NULL,
+    read_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_notifications_user_unread ON notifications(user_id, read_at);
+  CREATE INDEX IF NOT EXISTS idx_notifications_user_created ON notifications(user_id, created_at DESC);
 `;
 
 try {

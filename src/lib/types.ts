@@ -79,3 +79,14 @@ export interface FriendBookItem {
 }
 
 export type CloneOrigin = { ownerName: string } | { removed: true } | null;
+
+export interface NotificationItem {
+  id: number;
+  type: string;
+  title: string;
+  relatedUserId: number | null;
+  relatedBookId: number | null;
+  relatedFriendRequestId: number | null;
+  readAt: string | null;
+  createdAt: string;
+}
