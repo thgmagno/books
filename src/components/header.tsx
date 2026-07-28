@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus, Users } from "lucide-react";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { MobileMenu } from "@/components/mobile-menu";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/user-menu";
@@ -17,7 +18,8 @@ export async function Header() {
           <span className="font-display text-xl font-bold">Book Notes</span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        {/* Desktop: os controles ficam sempre visíveis, sem colapsar. */}
+        <div className="hidden items-center gap-3 sm:flex">
           {session?.user && <NotificationBell />}
           <Button asChild variant="ghost" size="icon" title="Amigos" aria-label="Amigos">
             <Link href="/friends">
@@ -32,6 +34,15 @@ export async function Header() {
           </Button>
           <ThemeToggle />
           <UserMenu
+            name={session?.user?.name}
+            email={session?.user?.email}
+            image={session?.user?.image}
+          />
+        </div>
+
+        {/* Mobile: os mesmos controles colapsam num único menu hambúrguer. */}
+        <div className="sm:hidden">
+          <MobileMenu
             name={session?.user?.name}
             email={session?.user?.email}
             image={session?.user?.image}
