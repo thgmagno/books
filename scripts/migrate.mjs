@@ -3,6 +3,14 @@ import { existsSync } from "fs";
 import { resolve } from "path";
 import { loadEnvFile } from "node:process";
 
+// Em produção (Railway) as variáveis de ambiente já vêm injetadas no
+// processo, sem arquivo .env — só carrega o arquivo quando ele existe
+// (uso local/dev).
+const envPath = resolve(".env");
+if (existsSync(envPath)) {
+  loadEnvFile(envPath);
+}
+
 const sql = `
   CREATE TABLE IF NOT EXISTS books (
     id SERIAL PRIMARY KEY,
@@ -116,7 +124,6 @@ const sql = `
 `;
 
 try {
-  loadEnvFile();
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
   console.log("Running migrations...");
   await pool.query(sql);
