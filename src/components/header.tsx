@@ -40,8 +40,9 @@ export async function Header() {
           />
         </div>
 
-        {/* Mobile: os mesmos controles colapsam num único menu hambúrguer. */}
-        <div className="sm:hidden">
+        {/* Mobile: notificações ficam sempre visíveis; o resto colapsa no menu. */}
+        <div className="flex items-center gap-1 sm:hidden">
+          {session?.user && <NotificationBell />}
           <MobileMenu
             name={session?.user?.name}
             email={session?.user?.email}
