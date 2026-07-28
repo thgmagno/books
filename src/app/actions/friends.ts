@@ -1,32 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { db, withTransaction } from "@/lib/db";
 import { authorize, areFriends, UnauthorizedError } from "@/lib/authorize";
+import { getOrCreateCurrentUser } from "@/lib/current-user";
 import type { ActionResult, FriendListItem, FriendRequestItem, UserSearchResult } from "@/lib/types";
-
-/**
- * Garante que o usuário logado tem uma linha em `users` (a tabela não é
- * populada automaticamente pelo NextAuth — não há adapter de DB). Faz
- * upsert por e-mail a cada chamada, então funciona mesmo para sessões que
- * começaram antes dessa tabela existir.
- */
-async function getOrCreateCurrentUser(): Promise<{ id: number; email: string }> {
-  const session = await auth();
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-  const email = session.user.email;
-  const result = await db.query(
-    `INSERT INTO users (email, name, image) VALUES ($1, $2, $3)
-     ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, image = EXCLUDED.image
-     RETURNING id`,
-    [email, session.user.name ?? null, session.user.image ?? null]
-  );
-  return { id: result.rows[0].id, email };
-}
 
 function mapRequestRow(row: {
   id: number;

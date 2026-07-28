@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Library } from "lucide-react";
 import { auth } from "@/auth";
 import {
   getFriends,
@@ -10,6 +12,7 @@ import { FriendSearchForm } from "@/components/friend-search-form";
 import { Header } from "@/components/header";
 import { RemoveFriendButton } from "@/components/remove-friend-button";
 import { UserAvatar } from "@/components/user-avatar";
+import { Button } from "@/components/ui/button";
 
 export default async function FriendsPage() {
   const session = await auth();
@@ -89,10 +92,17 @@ export default async function FriendsPage() {
                       </p>
                     </div>
                   </div>
-                  <RemoveFriendButton
-                    friendshipId={friend.friendshipId}
-                    friendName={friend.name ?? friend.email}
-                  />
+                  <div className="flex shrink-0 items-center gap-1">
+                    <Button asChild variant="ghost" size="icon" title="Ver livros" aria-label={`Ver livros de ${friend.name ?? friend.email}`}>
+                      <Link href={`/friends/${friend.userId}`}>
+                        <Library className="size-4" />
+                      </Link>
+                    </Button>
+                    <RemoveFriendButton
+                      friendshipId={friend.friendshipId}
+                      friendName={friend.name ?? friend.email}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
