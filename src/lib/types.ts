@@ -37,3 +37,31 @@ export const NOTE_TYPE_LABELS: Record<NoteType, string> = {
   quote: "Citação",
   general: "Nota",
 };
+
+export type FriendStatus = "self" | "friend" | "pending_sent" | "pending_received" | "none";
+
+export interface UserSearchResult {
+  id: number;
+  name: string | null;
+  email: string;
+  image: string | null;
+  status: FriendStatus;
+  friendRequestId: number | null;
+}
+
+export interface FriendListItem {
+  friendshipId: number;
+  userId: number;
+  name: string | null;
+  email: string;
+  image: string | null;
+}
+
+export interface FriendRequestItem {
+  id: number;
+  userId: number;
+  name: string | null;
+  email: string;
+  image: string | null;
+  createdAt: string;
+}

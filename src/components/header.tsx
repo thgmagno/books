@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,6 +17,11 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-3">
+          <Button asChild variant="ghost" size="icon" title="Amigos">
+            <Link href="/friends">
+              <Users className="size-4" />
+            </Link>
+          </Button>
           <Button asChild variant="secondary" size="sm">
             <Link href="/books/new">
               <Plus className="size-4" />
