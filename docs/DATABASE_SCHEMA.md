@@ -220,3 +220,24 @@ do porquê de cada um:
 - **Migração de `books.user_email` para `user_id`** — não incluída
   nesta issue (seção 1); se algum dia for necessária, é uma migration
   separada e cuidadosa sobre dado de produção existente.
+
+## 9. Addendum — `notifications` (Issue #13)
+
+Adicionada depois das seções acima, mesmo padrão de decisões:
+
+- `type` e `title` são gravados como texto final no momento da criação
+  (não um template recalculado na leitura) — por isso `related_user_id`,
+  `related_book_id` e `related_friend_request_id` podem virar `NULL`
+  (`ON DELETE SET NULL`) sem quebrar a notificação já existente; eles só
+  servem para montar o link de destino ao clicar, não o texto.
+- `user_id` (o destinatário) é `ON DELETE CASCADE` — notificação não
+  faz sentido sem o dono.
+- Sem soft delete: "limpar notificações" é um hard delete mesmo (a
+  issue pede essa ação explicitamente, e não há necessidade de manter
+  histórico de notificações já descartadas pelo usuário).
+- `BOOK_LIKED`/`BOOK_COMMENTED` (previstos na issue original) não são
+  emitidos porque a feature de curtir/comentar livro não está
+  implementada em nenhuma issue deste épico ainda (só a tabela
+  `book_likes`/`book_comments` existe, do #12) — ver `src/lib/notifications.ts`
+  para o comentário no código. Só notificações in-app: sem e-mail, sem
+  push.
