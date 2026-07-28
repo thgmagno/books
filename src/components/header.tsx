@@ -17,7 +17,7 @@ export async function Header() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="icon" title="Amigos">
+          <Button asChild variant="ghost" size="icon" title="Amigos" aria-label="Amigos">
             <Link href="/friends">
               <Users className="size-4" />
             </Link>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { LoaderCircle, Search, UserPlus } from "lucide-react";
+import { toast } from "sonner";
 import { cancelFriendRequest, searchUserByEmail, sendFriendRequest } from "@/app/actions/friends";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,14 +32,24 @@ export function FriendSearchForm() {
 
   function handleSendRequest(targetUserId: number) {
     startAction(async () => {
-      await sendFriendRequest(targetUserId);
+      const outcome = await sendFriendRequest(targetUserId);
+      if ("error" in outcome) {
+        toast.error(outcome.error);
+        return;
+      }
+      toast.success("Pedido de amizade enviado");
       setResult((prev) => (prev ? { ...prev, status: "pending_sent" } : prev));
     });
   }
 
   function handleCancelRequest(requestId: number) {
     startAction(async () => {
-      await cancelFriendRequest(requestId);
+      const outcome = await cancelFriendRequest(requestId);
+      if ("error" in outcome) {
+        toast.error(outcome.error);
+        return;
+      }
+      toast.success("Pedido cancelado");
       setResult((prev) => (prev ? { ...prev, status: "none", friendRequestId: null } : prev));
     });
   }
@@ -54,7 +65,7 @@ export function FriendSearchForm() {
           placeholder="Buscar usuário por e-mail..."
           required
         />
-        <Button type="submit" disabled={isSearching}>
+        <Button type="submit" disabled={isSearching} aria-label="Buscar">
           {isSearching ? <LoaderCircle className="size-4 animate-spin" /> : <Search className="size-4" />}
           <span className="hidden sm:inline">Buscar</span>
         </Button>

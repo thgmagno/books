@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { db, withTransaction } from "@/lib/db";
 import { authorize, areFriends, UnauthorizedError } from "@/lib/authorize";
-import type { FriendListItem, FriendRequestItem, UserSearchResult } from "@/lib/types";
+import type { ActionResult, FriendListItem, FriendRequestItem, UserSearchResult } from "@/lib/types";
 
 /**
  * Garante que o usuário logado tem uma linha em `users` (a tabela não é
@@ -89,12 +89,12 @@ export async function searchUserByEmail(
   return { ...target, status: "none", friendRequestId: null };
 }
 
-export async function sendFriendRequest(targetUserId: number) {
+export async function sendFriendRequest(targetUserId: number): Promise<ActionResult> {
   const { id: actorId } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "SEND_FRIEND_REQUEST", { targetUserId });
   } catch (err) {
-    if (err instanceof UnauthorizedError) return;
+    if (err instanceof UnauthorizedError) return { error: "Não foi possível enviar o pedido" };
     throw err;
   }
 
@@ -103,14 +103,15 @@ export async function sendFriendRequest(targetUserId: number) {
     targetUserId,
   ]);
   revalidatePath("/friends");
+  return { success: true };
 }
 
-export async function cancelFriendRequest(requestId: number) {
+export async function cancelFriendRequest(requestId: number): Promise<ActionResult> {
   const { id: actorId } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "CANCEL_FRIEND_REQUEST", { friendRequestId: requestId });
   } catch (err) {
-    if (err instanceof UnauthorizedError) return;
+    if (err instanceof UnauthorizedError) return { error: "Não foi possível cancelar o pedido" };
     throw err;
   }
 
@@ -119,14 +120,18 @@ export async function cancelFriendRequest(requestId: number) {
     [requestId]
   );
   revalidatePath("/friends");
+  return { success: true };
 }
 
-export async function respondFriendRequest(requestId: number, accept: boolean) {
+export async function respondFriendRequest(
+  requestId: number,
+  accept: boolean
+): Promise<ActionResult> {
   const { id: actorId } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "RESPOND_FRIEND_REQUEST", { friendRequestId: requestId });
   } catch (err) {
-    if (err instanceof UnauthorizedError) return;
+    if (err instanceof UnauthorizedError) return { error: "Não foi possível responder o pedido" };
     throw err;
   }
 
@@ -158,14 +163,15 @@ export async function respondFriendRequest(requestId: number, accept: boolean) {
   });
 
   revalidatePath("/friends");
+  return { success: true };
 }
 
-export async function removeFriendship(friendshipId: number) {
+export async function removeFriendship(friendshipId: number): Promise<ActionResult> {
   const { id: actorId } = await getOrCreateCurrentUser();
   try {
     await authorize(actorId, "REMOVE_FRIENDSHIP", { friendshipId });
   } catch (err) {
-    if (err instanceof UnauthorizedError) return;
+    if (err instanceof UnauthorizedError) return { error: "Não foi possível desfazer a amizade" };
     throw err;
   }
 
@@ -185,6 +191,7 @@ export async function removeFriendship(friendshipId: number) {
   });
 
   revalidatePath("/friends");
+  return { success: true };
 }
 
 export async function getFriends(): Promise<FriendListItem[]> {
