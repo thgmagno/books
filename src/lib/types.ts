@@ -11,6 +11,7 @@ export interface Book {
   status: BookStatus;
   date_started: string | null;
   date_finished: string | null;
+  clone_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -67,3 +68,14 @@ export interface FriendRequestItem {
 }
 
 export type ActionResult = { success: true } | { error: string };
+
+export interface FriendBookItem {
+  id: number;
+  title: string;
+  author: string | null;
+  description: string | null;
+  cloneCount: number;
+  alreadyCloned: boolean;
+}
+
+export type CloneOrigin = { ownerName: string } | { removed: true } | null;

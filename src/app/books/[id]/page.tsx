@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft, GitFork, Pencil } from "lucide-react";
 import { auth } from "@/auth";
 import { getBook } from "@/app/actions/books";
+import { getCloneOrigin } from "@/app/actions/clones";
 import { getNotes } from "@/app/actions/notes";
 import { DeleteNoteButton } from "@/components/delete-note-button";
 import { Header } from "@/components/header";
@@ -66,7 +67,7 @@ export default async function BookDetailPage({
   const book = await getBook(bookId);
   if (!book) notFound();
 
-  const notes = await getNotes(bookId);
+  const [notes, cloneOrigin] = await Promise.all([getNotes(bookId), getCloneOrigin(bookId)]);
   const noteTypes = Object.keys(NOTE_TYPE_LABELS) as NoteType[];
 
   return (
@@ -114,12 +115,26 @@ export default async function BookDetailPage({
                 </p>
               )}
 
+              {cloneOrigin && (
+                <p className="text-muted-foreground mt-1 text-xs">
+                  {"removed" in cloneOrigin
+                    ? "Clonado de um livro que não existe mais"
+                    : `Clonado da biblioteca de ${cloneOrigin.ownerName}`}
+                </p>
+              )}
+
               {book.description && (
                 <p className="mt-4 leading-relaxed">{book.description}</p>
               )}
 
               <div className="mt-5 flex flex-wrap items-center gap-4">
                 <StatusSelect bookId={book.id} status={book.status} />
+                {book.clone_count > 0 && (
+                  <span className="text-muted-foreground flex items-center gap-1 font-mono text-xs">
+                    <GitFork className="size-3.5" />
+                    {book.clone_count} {book.clone_count === 1 ? "clone" : "clones"}
+                  </span>
+                )}
                 {book.date_started && (
                   <span className="text-muted-foreground font-mono text-xs">
                     Iniciado:{" "}
